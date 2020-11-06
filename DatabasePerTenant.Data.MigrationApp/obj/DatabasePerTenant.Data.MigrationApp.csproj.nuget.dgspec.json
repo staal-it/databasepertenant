@@ -1,0 +1,141 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.MigrationApp/DatabasePerTenant.Data.MigrationApp.csproj": {}
+  },
+  "projects": {
+    "/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.Catalog/DatabasePerTenant.Data.Catalog.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.Catalog/DatabasePerTenant.Data.Catalog.csproj",
+        "projectName": "DatabasePerTenant.Data.Catalog",
+        "projectPath": "/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.Catalog/DatabasePerTenant.Data.Catalog.csproj",
+        "packagesPath": "/Users/erwinstaal/.nuget/packages/",
+        "outputPath": "/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.Catalog/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/Users/erwinstaal/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[3.1.7, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[3.1.7, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.101/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.MigrationApp/DatabasePerTenant.Data.MigrationApp.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.MigrationApp/DatabasePerTenant.Data.MigrationApp.csproj",
+        "projectName": "DatabasePerTenant.Data.MigrationApp",
+        "projectPath": "/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.MigrationApp/DatabasePerTenant.Data.MigrationApp.csproj",
+        "packagesPath": "/Users/erwinstaal/.nuget/packages/",
+        "outputPath": "/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.MigrationApp/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/Users/erwinstaal/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {
+              "/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.Catalog/DatabasePerTenant.Data.Catalog.csproj": {
+                "projectPath": "/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.Catalog/DatabasePerTenant.Data.Catalog.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.1.7, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[3.1.7, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.101/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

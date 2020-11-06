@@ -1,0 +1,119 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+pr: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  System_AccessToken: $(System.AccessToken)
+
+stages:
+- stage: 'BuildTestPublish'
+  displayName: 'Build and Publish'
+  jobs: 
+    - job: 'BuildTestPublish'
+      steps:
+      - task: DotNetCoreCLI@2
+        displayName: 'Restore'
+        inputs:
+          command: 'restore'
+          projects: '**/*.csproj'
+          feedsToUse: 'select'
+      - task: DotNetCoreCLI@2
+        displayName: 'Build'
+        inputs:
+          command: 'build'
+          projects: '**/*.csproj'
+      - task: DotNetCoreCLI@2
+        displayName: 'Publish'
+        inputs:
+          command: publish
+          publishWebProjects: True
+          arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/api'
+          zipAfterPublish: True
+      - task: UseDotNet@2
+        inputs:
+          version: '3.1.200'
+      - task: DotNetCoreCLI@2
+        displayName: 'Initialize EntityFrameworkCore'
+        inputs:
+          command: custom
+          custom: tool
+          arguments: 'install --global dotnet-ef'
+      - task: DotNetCoreCLI@2
+        displayName: 'Create migration'
+        inputs:
+          command: custom
+          custom: ef
+          arguments: 'migrations script --project DatabasePerTenant.Data.Catalog/ --startup-project DatabasePerTenant.Data.MigrationApp --context CatalogDbContext -i -o $(Build.ArtifactStagingDirectory)/sql/migration.sql'
+          workingDirectory: $(Build.SourcesDirectory)
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish api'
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/api'
+          ArtifactName: 'api'
+          publishLocation: 'Container'
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish SQL Script'
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/sql'
+          ArtifactName: 'sql'
+          publishLocation: 'Container'
+- stage: 'DeployTotest'
+  displayName: 'Deploy to test'
+  pool:
+   vmImage: 'windows-latest'
+  jobs:
+    - job: 'Deploy'
+      steps:
+      - checkout: Client
+        path: 'client' 
+      - task: DownloadBuildArtifacts@0
+        displayName: 'Download api artifacts'
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: 'api'
+          downloadPath: '$(System.DefaultWorkingDirectory)'
+      - task: DownloadBuildArtifacts@0
+        displayName: 'Download sql artifacts'
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: 'sql'
+          downloadPath: '$(System.DefaultWorkingDirectory)'
+      - task: AzureKeyVault@1
+        displayName: 'Fetch sql username and password'
+        inputs:
+          azureSubscription: '$(AzureSubscriptionName)'
+          KeyVaultName: '$(KeyVaultName)'
+          SecretsFilter: 'CatalogDbPassword,CatalogDbUserName'
+          RunAsPreJob: false
+      - task: SqlAzureDacpacDeployment@1
+        inputs:
+          azureSubscription: 'Azure Test'
+          AuthenticationType: 'server'
+          ServerName: '$(ServerName)'
+          DatabaseName: '$(DatabaseName)'
+          SqlUsername: '$(CatalogDbUserName)'
+          SqlPassword: '$(CatalogDbPassword)'
+          deployType: 'SqlTask'
+          SqlFile: '$(System.DefaultWorkingDirectory)/sql/migration.sql'
+          IpDetectionMethod: 'AutoDetect'
+      - task: AzureRmWebAppDeployment@4
+        displayName: 'Publish web app to Azure'
+        inputs:
+          ConnectionType: 'AzureRM'
+          azureSubscription: 'Azure Test'
+          appType: 'webAppLinux'
+          WebAppName: '$(WebAppName)'
+          packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+          RuntimeStack: 'DOTNETCORE|3.1'
