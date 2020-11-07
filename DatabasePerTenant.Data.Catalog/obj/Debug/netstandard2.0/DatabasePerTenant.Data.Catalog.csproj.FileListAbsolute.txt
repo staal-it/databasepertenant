@@ -1,8 +1,0 @@
-/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.Catalog/bin/Debug/netstandard2.0/DatabasePerTenant.Data.Catalog.deps.json
-/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.Catalog/bin/Debug/netstandard2.0/DatabasePerTenant.Data.Catalog.dll
-/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.Catalog/bin/Debug/netstandard2.0/DatabasePerTenant.Data.Catalog.pdb
-/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.Catalog/obj/Debug/netstandard2.0/DatabasePerTenant.Data.Catalog.csprojAssemblyReference.cache
-/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.Catalog/obj/Debug/netstandard2.0/DatabasePerTenant.Data.Catalog.AssemblyInfoInputs.cache
-/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.Catalog/obj/Debug/netstandard2.0/DatabasePerTenant.Data.Catalog.AssemblyInfo.cs
-/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.Catalog/obj/Debug/netstandard2.0/DatabasePerTenant.Data.Catalog.dll
-/Users/erwinstaal/Documents/source/demo/databasepertenant/DatabasePerTenant.Data.Catalog/obj/Debug/netstandard2.0/DatabasePerTenant.Data.Catalog.pdb
