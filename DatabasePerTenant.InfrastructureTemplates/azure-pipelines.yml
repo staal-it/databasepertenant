@@ -13,18 +13,18 @@ steps:
 - task: CopyFiles@2
   displayName: 'Copy composing to: $(build.artifactstagingdirectory)'
   inputs:
-    SourceFolder: composing
-    TargetFolder: '$(build.artifactstagingdirectory)/DatabasePerTenant.InfrastructureTemplates/composing'
+    SourceFolder: DatabasePerTenant.InfrastructureTemplates/composing
+    TargetFolder: '$(build.artifactstagingdirectory)/composing'
 - task: CopyFiles@2
   displayName: 'Copy nested to: $(build.artifactstagingdirectory)'
   inputs:
-    SourceFolder: nested
-    TargetFolder: '$(build.artifactstagingdirectory)/DatabasePerTenant.InfrastructureTemplates/nested'
+    SourceFolder: DatabasePerTenant.InfrastructureTemplates/nested
+    TargetFolder: '$(build.artifactstagingdirectory)/nested'
 - task: CopyFiles@2
   displayName: 'Copy scripts to: $(build.artifactstagingdirectory)'
   inputs:
-    SourceFolder: scripts
-    TargetFolder: '$(build.artifactstagingdirectory)/DatabasePerTenant.InfrastructureTemplates/scripts'
+    SourceFolder: DatabasePerTenant.InfrastructureTemplates/scripts
+    TargetFolder: '$(build.artifactstagingdirectory)/scripts'
 - task: AzureCLI@2
   displayName: "Create container $(Build.BuildId)"
   inputs:
