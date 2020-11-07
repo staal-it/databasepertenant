@@ -28,13 +28,13 @@ steps:
 - task: AzureCLI@2
   displayName: "Create container $(Build.BuildId)"
   inputs:
-    azureSubscription: 'Azure Test'
+    azureSubscription: '$SUBSCRIPTIONNAME'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: 'az storage container create --connection-string "$STORAGECONNECTIONSTRING" -n $CONTAINERNAME --account-name $STORAGEACCOUNTNAME'
 - task: AzureCLI@2
   inputs:
-    azureSubscription: 'Azure Test'
+    azureSubscription: '$SUBSCRIPTIONNAME'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: 'az storage blob upload-batch --account-name $STORAGEACCOUNTNAME -d $CONTAINERNAME -s $(build.artifactstagingdirectory)/templates --connection-string "$STORAGECONNECTIONSTRING"'
