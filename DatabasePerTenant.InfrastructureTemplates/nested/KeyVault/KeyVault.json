@@ -1,0 +1,62 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "keyVaultName": {
+        "type": "string"
+      },
+      "accessPolicies": {
+        "defaultValue": {
+          "list": []
+        },
+        "type": "object"
+      },
+      "location": {
+        "type": "string"
+      }
+    },
+    "variables": {},
+    "resources": [
+      {
+        "type": "Microsoft.KeyVault/vaults",
+        "apiVersion": "2016-10-01",
+        "name": "[parameters('keyVaultName')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "sku": {
+            "family": "A",
+            "name": "standard"
+          },
+          "accessPolicies": "[parameters('accessPolicies').list]",
+          "tenantId": "e70fd914-3e04-40bd-94d0-7baafdb35c58",
+          "enabledForDeployment": false,
+          "enabledForDiskEncryption": false,
+          "enabledForTemplateDeployment": true
+        }
+      },
+      {
+        "type": "Microsoft.KeyVault/vaults/accessPolicies",
+        "name": "[concat(parameters('keyVaultName'), '/add')]",
+        "apiVersion": "2018-02-14",
+        "dependsOn": [
+          "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+        ],
+        "properties": {
+          "accessPolicies": [
+            {
+              "comment": "Microsoft.Web resource provider",
+              "tenantId": "e70fd914-3e04-40bd-94d0-7baafdb35c58",
+              "objectId": "05b021cf-d75d-4fcb-8a32-9417dc419f94",
+              "permissions": {
+                "keys": [],
+                "secrets": [
+                  "Get"
+                ],
+                "certificates": []
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }

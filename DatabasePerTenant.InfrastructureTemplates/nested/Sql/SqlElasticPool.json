@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sqlServerName": {
+            "type": "string"
+        },
+        "elasticpoolSettings": {
+            "type": "object"
+        },
+        "location": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('sqlServerName'), '/', parameters('elasticpoolSettings').name)]",
+            "location": "[parameters('location')]",
+            "type": "Microsoft.Sql/servers/elasticpools",
+            "apiVersion": "2017-10-01-preview",
+            "kind": "pool",
+            "sku": {
+                "name": "[parameters('elasticpoolSettings').sku.name]",
+                "tier": "[parameters('elasticpoolSettings').sku.tier]",
+                "capacity": "[parameters('elasticpoolSettings').sku.capacity]"
+            },
+            "properties": {
+                "maxSizeBytes": "[parameters('elasticpoolSettings').maxSizeBytes]",
+                "perDatabaseSettings": {
+                    "minCapacity": "[parameters('elasticpoolSettings').databaseDtuMin]",
+                    "maxCapacity": "[parameters('elasticpoolSettings').databaseDtuMax]"
+                }
+            }
+        }
+    ]
+}

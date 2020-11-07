@@ -1,0 +1,42 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: CopyFiles@2
+  displayName: 'Copy composing to: $(build.artifactstagingdirectory)'
+  inputs:
+    SourceFolder: composing
+    TargetFolder: '$(build.artifactstagingdirectory)/templates/composing'
+- task: CopyFiles@2
+  displayName: 'Copy nested to: $(build.artifactstagingdirectory)'
+  inputs:
+    SourceFolder: nested
+    TargetFolder: '$(build.artifactstagingdirectory)/templates/nested'
+- task: CopyFiles@2
+  displayName: 'Copy scripts to: $(build.artifactstagingdirectory)'
+  inputs:
+    SourceFolder: scripts
+    TargetFolder: '$(build.artifactstagingdirectory)/templates/scripts'
+- task: AzureCLI@2
+  displayName: "Create container $(Build.BuildId)"
+  inputs:
+    azureSubscription: 'Azure Test'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: 'az storage container create --connection-string "$STORAGECONNECTIONSTRING" -n $CONTAINERNAME --account-name $STORAGEACCOUNTNAME'
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'Azure Test'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: 'az storage blob upload-batch --account-name $STORAGEACCOUNTNAME -d $CONTAINERNAME -s $(build.artifactstagingdirectory)/templates --connection-string "$STORAGECONNECTIONSTRING"'
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'

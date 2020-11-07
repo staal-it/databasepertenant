@@ -1,0 +1,29 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storageAccount": {
+            "type": "object"
+        },
+        "location": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "[parameters('storageAccount').sku.name]",
+                "tier": "[parameters('storageAccount').sku.tier]"
+            },
+            "kind": "[parameters('storageAccount').kind]",
+            "name": "[parameters('storageAccount').name]",
+            "apiVersion": "2019-04-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "supportsHttpsTrafficOnly": "[parameters('storageAccount').supportsHttpsTrafficOnly]",
+                "accessTier": "[parameters('storageAccount').accessTier]"
+            }
+        }
+    ]
+}

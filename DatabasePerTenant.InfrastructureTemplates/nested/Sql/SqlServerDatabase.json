@@ -1,0 +1,50 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "databaseSettings": {
+            "type": "object"
+        },
+        "sqlServerName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "condition": "[not(empty(parameters('databaseSettings').onPool))]",
+            "type": "Microsoft.Sql/servers/databases",
+            "kind": "v12.0,user",
+            "name": "[if(empty(parameters('databaseSettings').onPool), concat(parameters('sqlServerName'), '/', 'dummy'), concat(parameters('sqlServerName'), '/', parameters('databaseSettings').name))]",
+            "apiVersion": "2017-10-01-preview",
+            "location": "[parameters('location')]",
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "requestedServiceObjectiveName": "ElasticPool",
+                 "elasticPoolId": "[resourceId('Microsoft.Sql/servers/elasticPools', parameters('sqlServerName') , parameters('databaseSettings').onPool)]"
+            }
+        },
+        {
+            "condition": "[empty(parameters('databaseSettings').onPool)]",
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2017-10-01-preview",
+            "name": "[if(empty(parameters('databaseSettings').onPool), concat(parameters('sqlServerName'), '/', parameters('databaseSettings').name), concat(parameters('sqlServerName'), '/', 'dummy'))]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('databaseSettings').sku.name]",
+                "tier": "[parameters('databaseSettings').sku.tier]",
+                "capacity": "[parameters('databaseSettings').sku.capacity]"
+            },
+            "kind": "v12.0,user",
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "maxSizeBytes": "[parameters('databaseSettings').maxSizeBytes]",
+                "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
+                "zoneRedundant": false
+            }
+        }
+    ]
+}

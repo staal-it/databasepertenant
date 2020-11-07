@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "keyVaultName": {
+            "type": "string"
+        },
+        "objectId": {
+            "type": "string"
+        },
+        "secretsPermissions": {
+          "type": "array",
+          "defaultValue": [
+            "list"
+          ],
+          "metadata": {
+            "description": "Specifies the permissions to secrets in the vault. Valid values are: all, get, list, set, delete, backup, restore, recover, and purge."
+          }
+        },
+        "location": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults/accessPolicies",
+            "name": "[concat(parameters('keyVaultName'), '/add')]",
+            "apiVersion": "2018-02-14",
+            "location": "[parameters('location')]",
+            "properties": {
+              "accessPolicies": [
+                {
+                  "comment": "Microsoft.Web resource provider",
+                  "tenantId": "e70fd914-3e04-40bd-94d0-7baafdb35c58",
+                  "objectId": "[parameters('objectId')]",
+                  "permissions": {
+                    "keys": [],
+                    "secrets": "[parameters('secretsPermissions')]",
+                    "certificates": []
+                  }
+                }
+              ]
+            }
+          }
+    ]
+}

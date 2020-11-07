@@ -1,0 +1,99 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "env": {
+            "value": "__environmentName__"
+        },
+        "appServicePlan": {
+            "value": {
+                "name": "plan-databasepertenant-__environmentName__",
+                "skuCapacity": 1,
+                "skuName": "B1",
+                "autoscaleEnabled": false,
+                "autoscaleSettingName": "CpuBasedScalingRule",
+                "minimumCapacity": 1,
+                "maximumCapacity": 10,
+                "defaultCapacity": 1,
+                "metricName": "CpuPercentage",
+                "thresholdToScaleOut": 70,
+                "thresholdToScaleIn": 30,
+                "increaseScaleOut": 1,
+                "decreaseScaleIn": 1,
+                "scaleActionType": "ChangeCount"
+            }
+        },
+        "catalogSqlSettings": {
+            "value": {
+                "sqlServerName": "sql-databasepertenant-catalog-__environmentName__",
+                "sqlServerUsername": "databasepertenant",
+                "sqlServerPassword": "__sqlServerPassword__",
+                "databases": [
+                    {
+                        "name": "sqldb-databasepertenant-catalog-__environmentName__",
+                        "onPool": "",
+                        "sku": {
+                            "name": "Basic",
+                            "tier": "Basic",
+                            "capacity": 5
+                        },
+                        "maxSizeBytes": 2147483648
+                    }
+                ]
+            }
+        },
+        "tenantSqlSettings": {
+            "value": {
+                "sqlServerName": "sql-databasepertenant-tenants1-__environmentName__",
+                "sqlServerUsername": "databasepertenant",
+                "sqlServerPassword": "__sqlServerPassword__",
+                "elasticPool": {
+                    "name": "sqlpool-databasepertenant-tenants1-__environmentName__",
+                    "sku": {
+                        "name": "StandardPool",
+                        "tier": "Standard",
+                        "capacity": 50
+                    },
+                    "databaseDtuMin": "0",
+                    "databaseDtuMax": "50",
+                    "maxSizeBytes": 53687091200
+                },
+                "databases": [
+                    {
+                        "name": "sqldb-databasepertenant-standard-demo1-__environmentName__",
+                        "onPool": "sqlpool-databasepertenant-tenants1-__environmentName__",
+                        "sku": {
+                            "name": "",
+                            "tier": "",
+                            "capacity": 0
+                        },
+                        "maxSizeBytes": 0
+                    }
+                ]
+            }
+        },
+        "storageAccountSettings": {
+            "value": {
+                "name": "stdatabasepertenant__environmentName__",
+                "sku": {
+                    "name": "Standard_LRS",
+                    "tier": "Standard"
+                },
+                "kind": "StorageV2",
+                "supportsHttpsTrafficOnly": true,
+                "accessTier": "Cool"
+            }
+        },
+        "keyVaultAccessPolicies": {
+            "value": { }
+        },
+        "templateSettings": {
+            "value": {
+                "location": "__location__",
+                "storageAccountUrl": "https://__templateStorageAccountName__.blob.core.windows.net",
+                "storageAccountKey": "__templateStorageAccountKey__",
+                "storageContainer": "__templateStorageContainerName__"
+            }
+        }
+    }
+}

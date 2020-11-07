@@ -1,0 +1,363 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "env": {
+            "type": "string"
+        },
+        "appServicePlan": {
+            "type": "object"
+        },
+        "catalogSqlSettings": {
+            "type": "object"
+        },
+        "tenantSqlSettings": {
+            "type": "object"
+        },
+        "storageAccountSettings": {
+            "type": "object"
+        },
+        "keyVaultAccessPolicies": {
+            "type": "object"
+        },
+        "templateSettings": {
+            "type": "object"
+        }
+    },
+    "variables": {
+        "appInsightsName": "[concat('appi-databasepertenant', '-', parameters('env'))]",
+        "webAppName": "[concat('app-databasepertenant', '-', parameters('env'))]",
+        "keyVaultName": "[concat('kv-databasepertenant', '-', parameters('env'))]",
+        "appConfigurationName": "[concat('appconfig-databasepertenant', '-', parameters('env'))]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-01-01",
+            "name": "ApplicationInsight",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateSettings').storageAccountUrl, '/', parameters('templateSettings').storageContainer, '/nested/Insights/ApplicationInsights.json', parameters('templateSettings').storageAccountKey)]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "applicationInsightsName": {
+                        "value": "[variables('appInsightsName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('templateSettings').location]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "KeyVault",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateSettings').storageAccountUrl, '/', parameters('templateSettings').storageContainer, '/nested/KeyVault/KeyVault.json', parameters('templateSettings').storageAccountKey)]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "keyVaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "accessPolicies": {
+                        "value": "[parameters('keyVaultAccessPolicies')]"
+                    },
+                    "location": {
+                        "value": "[parameters('templateSettings').location]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "KeyVaultAccessPoliciesForAPI",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": 
+            [
+                "KeyVault"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateSettings').storageAccountUrl, '/', parameters('templateSettings').storageContainer, '/nested/KeyVault/KeyVaultAccessPolicies.json', parameters('templateSettings').storageAccountKey)]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "keyVaultName": {
+                        "value": "[variables('keyvaultName')]"
+                    },
+                    "resourceId": {
+                        "value": "[resourceId(resourceGroup().name, 'Microsoft.Web/Sites/', concat(variables('webAppName'), '-api'))]"
+                    },
+                    "location": {
+                        "value": "[parameters('templateSettings').location]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "AppConfiguration",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateSettings').storageAccountUrl, '/', parameters('templateSettings').storageContainer, '/nested/AppConfiguration/AppConfiguration.json', parameters('templateSettings').storageAccountKey)]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "appConfigurationName": {
+                        "value": "[variables('appConfigurationName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('templateSettings').location]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "Serverfarm",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateSettings').storageAccountUrl, '/', parameters('templateSettings').storageContainer, '/nested/WebApp/Serverfarm.json', parameters('templateSettings').storageAccountKey)]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "appServicePlan": {
+                        "value": "[parameters('appServicePlan')]"
+                    },
+                    "location": {
+                        "value": "[parameters('templateSettings').location]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "WebApp-Api",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "Serverfarm",
+                "ApplicationInsight"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateSettings').storageAccountUrl, '/', parameters('templateSettings').storageContainer, '/nested/WebApp/WebApp.json', parameters('templateSettings').storageAccountKey)]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "webappname": {
+                        "value": "[concat(variables('webAppName'), '-api')]"
+                    },
+                    "appServicePlanName": {
+                        "value": "[parameters('appServicePlan').name]"
+                    },
+                    "linuxFxVersion": {
+                        "value": "DOTNETCORE|3.1"
+                    },
+                    "location": {
+                        "value": "[parameters('templateSettings').location]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "WebApp-Client",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "Serverfarm",
+                "ApplicationInsight"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateSettings').storageAccountUrl, '/', parameters('templateSettings').storageContainer, '/nested/WebApp/WebApp.json', parameters('templateSettings').storageAccountKey)]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "webappname": {
+                        "value": "[concat(variables('webAppName'), '-client')]"
+                    },
+                    "appServicePlanName": {
+                        "value": "[parameters('appServicePlan').name]"
+                    },
+                    "linuxFxVersion": {
+                        "value": "NODE|lts"
+                    },
+                    "location": {
+                        "value": "[parameters('templateSettings').location]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "CatalogSqlServer",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateSettings').storageAccountUrl, '/', parameters('templateSettings').storageContainer, '/nested/Sql/SqlServer.json', parameters('templateSettings').storageAccountKey)]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[parameters('catalogSqlSettings').sqlServerName]"
+                    },
+                    "sqlServerUsername": {
+                        "value": "[parameters('catalogSqlSettings').sqlServerUsername]"
+                    },
+                    "sqlServerPassword": {
+                        "value": "[parameters('catalogSqlSettings').sqlServerPassword]"
+                    },
+                    "location": {
+                        "value": "[parameters('templateSettings').location]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "[concat('SqlDb-', parameters('catalogSqlSettings').databases[copyIndex()].name)]",
+            "type": "Microsoft.Resources/deployments",
+            "copy": {
+                "name": "CatalogSqlDatabaseIterator",
+                "count": "[length(parameters('catalogSqlSettings').databases)]"
+            },
+            "dependsOn": [
+                "CatalogSqlServer"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateSettings').storageAccountUrl, '/', parameters('templateSettings').storageContainer, '/nested/Sql/SqlServerDatabase.json', parameters('templateSettings').storageAccountKey)]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "databaseSettings": {
+                        "value": "[parameters('catalogSqlSettings').databases[copyIndex()]]"
+                    },
+                    "sqlServerName": {
+                        "value": "[parameters('catalogSqlSettings').sqlServerName]"
+                    },
+                    "location": {
+                        "value": "[parameters('templateSettings').location]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "TenantSqlServer",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateSettings').storageAccountUrl, '/', parameters('templateSettings').storageContainer, '/nested/Sql/SqlServer.json', parameters('templateSettings').storageAccountKey)]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[parameters('tenantSqlSettings').sqlServerName]"
+                    },
+                    "sqlServerUsername": {
+                        "value": "[parameters('tenantSqlSettings').sqlServerUsername]"
+                    },
+                    "sqlServerPassword": {
+                        "value": "[parameters('tenantSqlSettings').sqlServerPassword]"
+                    },
+                    "location": {
+                        "value": "[parameters('templateSettings').location]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "TenantSqlElasticPool",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "TenantSqlServer"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateSettings').storageAccountUrl, '/', parameters('templateSettings').storageContainer, '/nested/Sql/SqlElasticPool.json', parameters('templateSettings').storageAccountKey)]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "elasticpoolSettings": {
+                        "value": "[parameters('tenantSqlSettings').elasticPool]"
+                    },
+                    "sqlServerName": {
+                        "value": "[parameters('tenantSqlSettings').sqlServerName]"
+                    },
+                    "location": {
+                        "value": "[parameters('templateSettings').location]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "[concat('TenantSqlDb-', parameters('tenantSqlSettings').databases[copyIndex()].name)]",
+            "type": "Microsoft.Resources/deployments",
+            "copy": {
+                "name": "TenantSqlDatabaseIterator",
+                "count": "[length(parameters('tenantSqlSettings').databases)]"
+            },
+            "dependsOn": [
+                "TenantSqlElasticPool"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateSettings').storageAccountUrl, '/', parameters('templateSettings').storageContainer, '/nested/Sql/SqlServerDatabase.json', parameters('templateSettings').storageAccountKey)]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "databaseSettings": {
+                        "value": "[parameters('tenantSqlSettings').databases[copyIndex()]]"
+                    },
+                    "sqlServerName": {
+                        "value": "[parameters('tenantSqlSettings').sqlServerName]"
+                    },
+                    "location": {
+                        "value": "[parameters('templateSettings').location]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "Storage",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateSettings').storageAccountUrl, '/', parameters('templateSettings').storageContainer, '/nested/Storage/StorageAccountV2.json', parameters('templateSettings').storageAccountKey)]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "storageAccount": {
+                        "value": "[parameters('storageAccountSettings')]"
+                    },
+                    "location": {
+                        "value": "[parameters('templateSettings').location]"
+                    }
+                }
+            }
+        }
+    ]
+}
