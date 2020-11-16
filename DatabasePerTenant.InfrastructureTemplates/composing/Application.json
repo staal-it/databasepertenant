@@ -25,10 +25,10 @@
         }
     },
     "variables": {
-        "appInsightsName": "[concat('appi-databasepertenant', '-', parameters('env'))]",
-        "webAppName": "[concat('app-databasepertenant', '-', parameters('env'))]",
-        "keyVaultName": "[concat('kv-databasepertenant', '-', parameters('env'))]",
-        "appConfigurationName": "[concat('appconfig-databasepertenant', '-', parameters('env'))]"
+        "appInsightsName": "[concat('appi-dbpertenant', '-', parameters('env'))]",
+        "webAppName": "[concat('app-dbpertenant', '-', parameters('env'))]",
+        "keyVaultName": "[concat('kv-dbpertenant', '-', parameters('env'))]",
+        "appConfigurationName": "[concat('appconfig-dbpertenant', '-', parameters('env'))]"
     },
     "resources": [
         {
