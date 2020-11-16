@@ -45,7 +45,7 @@
           "accessPolicies": [
             {
               "comment": "Microsoft.Web resource provider",
-              "tenantId": "e70fd914-3e04-40bd-94d0-7baafdb35c58",
+              "tenantId": "[subscription().tenantId]",
               "objectId": "05b021cf-d75d-4fcb-8a32-9417dc419f94",
               "permissions": {
                 "keys": [],
