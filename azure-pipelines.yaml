@@ -74,8 +74,6 @@ stages:
   jobs:
     - job: 'Deploy'
       steps:
-      - checkout: Client
-        path: 'client' 
       - task: DownloadBuildArtifacts@0
         displayName: 'Download api artifacts'
         inputs:
