@@ -33,30 +33,6 @@
           "enabledForDiskEncryption": false,
           "enabledForTemplateDeployment": true
         }
-      },
-      {
-        "type": "Microsoft.KeyVault/vaults/accessPolicies",
-        "name": "[concat(parameters('keyVaultName'), '/add')]",
-        "apiVersion": "2018-02-14",
-        "dependsOn": [
-          "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
-        ],
-        "properties": {
-          "accessPolicies": [
-            {
-              "comment": "Microsoft.Web resource provider",
-              "tenantId": "[subscription().tenantId]",
-              "objectId": "05b021cf-d75d-4fcb-8a32-9417dc419f94",
-              "permissions": {
-                "keys": [],
-                "secrets": [
-                  "Get"
-                ],
-                "certificates": []
-              }
-            }
-          ]
-        }
       }
     ]
   }
