@@ -36,13 +36,13 @@ stages:
           azureSubscription: '$(SUBSCRIPTIONNAME)'
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
-          inlineScript: 'az storage container create --connection-string "$STORAGECONNECTIONSTRING" -n $CONTAINERNAME --account-name $STORAGEACCOUNTNAME'
+          inlineScript: 'az storage container create --connection-string "$STORAGECONNECTIONSTRING" -n $(templateStorageContainerName) --account-name $(templateStorageAccountName)'
       - task: AzureCLI@2
         inputs:
           azureSubscription: '$(SUBSCRIPTIONNAME)'
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
-          inlineScript: 'az storage blob upload-batch --account-name $STORAGEACCOUNTNAME -d $CONTAINERNAME -s $(build.artifactstagingdirectory)/templates --connection-string "$STORAGECONNECTIONSTRING"'
+          inlineScript: 'az storage blob upload-batch --account-name $(templateStorageAccountName) -d $(templateStorageContainerName) -s $(build.artifactstagingdirectory)/templates --connection-string "$STORAGECONNECTIONSTRING"'
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifact: drop'
 - stage: 'Deploy'
