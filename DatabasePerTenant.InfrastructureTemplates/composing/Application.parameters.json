@@ -89,7 +89,7 @@
         },
         "templateSettings": {
             "value": {
-                "location": "__location__",
+                "location": "westeurope",
                 "storageAccountUrl": "https://__templateStorageAccountName__.blob.core.windows.net",
                 "storageAccountKey": "__templateStorageAccountKey__",
                 "storageContainer": "__templateStorageContainerName__"
