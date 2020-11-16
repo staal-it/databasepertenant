@@ -73,7 +73,7 @@ stages:
         inputs:
           azureResourceManagerConnection: '$(SUBSCRIPTIONNAME)'
           subscriptionId: '$(SUBSCRIPTIONID)'
-          resourceGroupName: 'leveldevelopment-$(environmentName)'
+          resourceGroupName: 'databasepertenant-$(environmentName)'
           location: 'West Europe'
           csmFile: '$(System.DefaultWorkingDirectory)/drop/templates/composing/Application.json'
           csmParametersFile: '$(System.DefaultWorkingDirectory)/drop/templates/composing/Application.parameters.json'
