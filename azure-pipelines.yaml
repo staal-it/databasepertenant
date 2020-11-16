@@ -99,7 +99,7 @@ stages:
           RunAsPreJob: false
       - task: SqlAzureDacpacDeployment@1
         inputs:
-          azureSubscription: 'Azure Test'
+          azureSubscription: '$(AzureSubscriptionName)'
           AuthenticationType: 'server'
           ServerName: '$(ServerName)'
           DatabaseName: '$(DatabaseName)'
@@ -112,7 +112,7 @@ stages:
         displayName: 'Publish web app to Azure'
         inputs:
           ConnectionType: 'AzureRM'
-          azureSubscription: 'Azure Test'
+          azureSubscription: '$(AzureSubscriptionName)'
           appType: 'webAppLinux'
           WebAppName: '$(WebAppName)'
           packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
