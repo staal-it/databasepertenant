@@ -22,7 +22,7 @@
             "properties": {
                 "accessPolicies": [
                     {
-                        "tenantId": "e70fd914-3e04-40bd-94d0-7baafdb35c58",
+                        "tenantId": "[subscription().tenantId]",
                         "objectId": "[reference(parameters('resourceId'), '2018-11-01', 'Full').identity.principalId]",
                         "permissions": {
                             "keys": [],
