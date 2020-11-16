@@ -28,7 +28,7 @@
             "name": "standard"
           },
           "accessPolicies": "[parameters('accessPolicies').list]",
-          "tenantId": "e70fd914-3e04-40bd-94d0-7baafdb35c58",
+          "tenantId": "[subscription().tenantId]",
           "enabledForDeployment": false,
           "enabledForDiskEncryption": false,
           "enabledForTemplateDeployment": true
