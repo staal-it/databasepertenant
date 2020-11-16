@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "webappname": {
+            "type": "string"
+        },
+        "appServicePlanName": {
+            "type": "string"
+        },
+        "linuxFxVersion": {
+            "type": "string"
+        },
+        "useManagedIdentity": {
+            "type": "bool",
+            "defaultValue": true
+        },
+        "healthCheckPath": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "location": {
+            "type": "string"
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "apiVersion": "2018-02-01",
+            "name": "[parameters('webappname')]",
+            "type": "Microsoft.Web/sites",
+            "location": "[parameters('location')]",
+            "kind": "app,linux",
+            "identity": {
+                "type": "[if(parameters('useManagedIdentity'), 'SystemAssigned', 'None')]"
+            },
+            "properties": {
+                "siteConfig": {
+                    "linuxFxVersion": "[parameters('linuxFxVersion')]",
+                    "appCommandLine": "[if(contains(parameters('linuxFxVersion'), 'NODE'), 'pm2 serve /home/site/wwwroot --no-daemon --spa', '')]"
+                },
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+                "healthCheckPath": "[parameters('healthCheckPath')]"
+            }
+        }
+    ]
+}

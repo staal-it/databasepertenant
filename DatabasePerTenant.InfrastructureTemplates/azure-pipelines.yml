@@ -1,0 +1,80 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: 'PublishTemplates'
+  displayName: 'PublishTemplates'
+  jobs: 
+    - job: 'PublishTemplates'
+      steps:
+      - task: CopyFiles@2
+        displayName: 'Copy composing to: $(build.artifactstagingdirectory)'
+        inputs:
+          SourceFolder: DatabasePerTenant.InfrastructureTemplates/composing
+          TargetFolder: '$(build.artifactstagingdirectory)/templates/composing'
+      - task: CopyFiles@2
+        displayName: 'Copy nested to: $(build.artifactstagingdirectory)'
+        inputs:
+          SourceFolder: DatabasePerTenant.InfrastructureTemplates/nested
+          TargetFolder: '$(build.artifactstagingdirectory)/templates/nested'
+      - task: CopyFiles@2
+        displayName: 'Copy scripts to: $(build.artifactstagingdirectory)'
+        inputs:
+          SourceFolder: DatabasePerTenant.InfrastructureTemplates/scripts
+          TargetFolder: '$(build.artifactstagingdirectory)/templates/scripts'
+      - task: AzureCLI@2
+        displayName: "Create container $(Build.BuildId)"
+        inputs:
+          azureSubscription: '$(SUBSCRIPTIONNAME)'
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: 'az storage container create --connection-string "$STORAGECONNECTIONSTRING" -n $(templateStorageContainerName) --account-name $(templateStorageAccountName)'
+      - task: AzureCLI@2
+        inputs:
+          azureSubscription: '$(SUBSCRIPTIONNAME)'
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: 'az storage blob upload-batch --account-name $(templateStorageAccountName) -d $(templateStorageContainerName) -s $(build.artifactstagingdirectory)/templates --connection-string "$STORAGECONNECTIONSTRING"'
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact: drop'
+- stage: 'Deploy'
+  displayName: 'Deploy'
+  jobs: 
+    - job: 'Deploy'
+      steps:
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: 'drop'
+          downloadPath: '$(System.DefaultWorkingDirectory)'
+      - task: colinsalmcorner.colinsalmcorner-buildtasks.replace-tokens-task.ReplaceTokens@1
+        inputs:
+          sourcePath: '$(System.DefaultWorkingDirectory)/drop/templates/composing/'
+          filePattern: 'Application.parameters.json'
+          tokenRegex: '__(\w+)__'
+      - task: AzurePowerShell@5
+        displayName: LoadCurrentKeyVaultAccessPolicies
+        inputs:
+          azureSubscription: '$(SUBSCRIPTIONNAME)'
+          ScriptPath: '$(System.DefaultWorkingDirectory)/drop/templates/scripts/LoadCurrentKeyVaultAccessPolicies.ps1'
+          ScriptArguments: '"kv-databasepertenant-test"'
+          azurePowerShellVersion: LatestVersion
+      - task: AzureResourceManagerTemplateDeployment@3
+        displayName: 'Deploy ARM Templates'
+        inputs:
+          azureResourceManagerConnection: '$(SUBSCRIPTIONNAME)'
+          subscriptionId: '$(SUBSCRIPTIONID)'
+          resourceGroupName: 'databasepertenant-$(environmentName)'
+          location: 'West Europe'
+          csmFile: '$(System.DefaultWorkingDirectory)/drop/templates/composing/Application.json'
+          csmParametersFile: '$(System.DefaultWorkingDirectory)/drop/templates/composing/Application.parameters.json'
+          overrideParameters: '-keyVaultAccessPolicies $(Infra.KeyVault.AccessPolicies)'

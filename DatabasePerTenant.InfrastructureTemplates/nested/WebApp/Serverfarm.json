@@ -1,0 +1,101 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "appServicePlan": {
+        "type": "object"
+      },
+      "location": {
+        "type": "string"
+      }
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Web/serverfarms",
+        "apiVersion": "2015-08-01",
+        "name": "[parameters('appServicePlan').name]",
+        "kind": "linux",
+        "location": "[parameters('location')]",
+        "sku": {
+          "name": "[parameters('appServicePlan').skuName]",
+          "capacity": "[parameters('appServicePlan').skuCapacity]"
+        },
+        "properties": {
+          "name": "[parameters('appServicePlan').name]",
+          "workerSizeId": "1",
+          "reserved": true,
+          "numberOfWorkers": 1
+        }
+      },
+      {
+        "apiVersion": "2015-04-01",
+        "condition": "[parameters('appServicePlan').autoscaleEnabled]",
+        "type": "Microsoft.Insights/autoscalesettings",
+        "name": "[parameters('appServicePlan').autoscaleSettingName]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlan').name)]"
+        ],
+        "location": "[parameters('location')]",
+        "properties": {
+          "profiles": [
+            {
+              "name": "DefaultAutoscaleProfile",
+              "capacity": {
+                "minimum": "[parameters('appServicePlan').minimumCapacity]",
+                "maximum": "[parameters('appServicePlan').maximumCapacity]",
+                "default": "[parameters('appServicePlan').defaultCapacity]"
+              },
+              "rules": [
+                {
+                  "metricTrigger": {
+                    "metricName": "[parameters('appServicePlan').metricName]",
+                    "metricNamespace": "microsoft.web/serverfarms",
+                    "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlan').name)]",
+                    "timeGrain": "PT1M",
+                    "statistic": "Average",
+                    "timeWindow": "PT10M",
+                    "timeAggregation": "Average",
+                    "operator": "GreaterThan",
+                    "threshold": "[parameters('appServicePlan').thresholdToScaleOut]",
+                    "dimensions": [
+                    ],
+                    "dividePerInstance": true
+                  },
+                  "scaleAction": {
+                    "direction": "Increase",
+                    "type": "[parameters('appServicePlan').scaleActionType]",
+                    "value": "[parameters('appServicePlan').increaseScaleOut]",
+                    "cooldown": "PT5M"
+                  }
+                },
+                {
+                  "metricTrigger": {
+                    "metricName": "[parameters('appServicePlan').metricName]",
+                    "metricNamespace": "microsoft.web/serverfarms",
+                    "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlan').name)]",
+                    "timeGrain": "PT1M",
+                    "statistic": "Average",
+                    "timeWindow": "PT10M",
+                    "timeAggregation": "Average",
+                    "operator": "LessThan",
+                    "threshold": "[parameters('appServicePlan').thresholdToScaleIn]",
+                    "dimensions": [
+                    ],
+                    "dividePerInstance": true
+                  },
+                  "scaleAction": {
+                    "direction": "Decrease",
+                    "type": "[parameters('appServicePlan').scaleActionType]",
+                    "value": "[parameters('appServicePlan').decreaseScaleIn]",
+                    "cooldown": "PT5M"
+                  }
+                }
+              ]
+            }
+          ],
+          "enabled": "[parameters('appServicePlan').autoscaleEnabled]",
+          "targetResourceUri": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlan').name)]"
+        }
+      }
+    ]
+  }
