@@ -229,6 +229,60 @@
         },
         {
             "apiVersion": "2015-01-01",
+            "name": "CatalogSqlServerUsername",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [ "KeyVault" ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateSettings').storageAccountUrl, '/', parameters('templateSettings').storageContainer, '/nested/KeyVault/KeyVaultSecret.json', parameters('templateSettings').storageAccountKey)]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "keyVaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "secretName": {
+                        "value": "CatalogDbUserName"
+                    },
+                    "secretValue": {
+                        "value": "[parameters('catalogSqlSettings').sqlServerUsername]"
+                    },
+                    "location": {
+                        "value": "[parameters('templateSettings').location]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "CatalogSqlServerPassword",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [ "KeyVault" ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateSettings').storageAccountUrl, '/', parameters('templateSettings').storageContainer, '/nested/KeyVault/KeyVaultSecret.json', parameters('templateSettings').storageAccountKey)]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "keyVaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "secretName": {
+                        "value": "CatalogDbPassword"
+                    },
+                    "secretValue": {
+                        "value": "[parameters('catalogSqlSettings').sqlServerPassword]"
+                    },
+                    "location": {
+                        "value": "[parameters('templateSettings').location]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
             "name": "[concat('SqlDb-', parameters('catalogSqlSettings').databases[copyIndex()].name)]",
             "type": "Microsoft.Resources/deployments",
             "copy": {
