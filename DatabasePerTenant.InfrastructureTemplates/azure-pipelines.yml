@@ -19,7 +19,7 @@ stages:
       - task: CopyFiles@2
         displayName: 'Copy composing to: $(build.artifactstagingdirectory)'
         inputs:
-          SourceFolder: DatabasePerTenant.InfrastructureTemplates/**
+          SourceFolder: DatabasePerTenant.InfrastructureTemplates
           TargetFolder: '$(build.artifactstagingdirectory)/templates'
       - task: AzureCLI@2
         displayName: "Create container $(Build.BuildId)"
