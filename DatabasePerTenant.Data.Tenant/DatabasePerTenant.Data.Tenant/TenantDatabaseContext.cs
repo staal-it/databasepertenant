@@ -33,7 +33,7 @@ namespace DatabasePerTenant.Data.Tenant.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=tcp:sql-databasepertenant-catalog-test.database.windows.net,1433;Initial Catalog=sqldb-dafaultdatabase;Persist Security Info=False;User ID=databasepertenant;Password=1234@Demo;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+                optionsBuilder.UseSqlServer("Server=todo,1433;Initial Catalog=sqldb-dafaultdatabase;Persist Security Info=False;User ID=databasepertenant;Password=todo;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             }
         }
 
