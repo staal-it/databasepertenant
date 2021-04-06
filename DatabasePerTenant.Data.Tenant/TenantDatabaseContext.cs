@@ -1,16 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DatabasePerTenant.Data.Tenant.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace DatabasePerTenant.Data.Tenant.Models
+namespace DatabasePerTenant.Data.Tenant
 {
     public partial class TenantDatabaseContext : DbContext
     {
-        public TenantDatabaseContext()
-        {
-        }
 
-        public TenantDatabaseContext(DbContextOptions<TenantDatabaseContext> options)
+        private readonly ITenantDbConnectionStringfactory TenantDbConnectionStringFactory;
+
+        public TenantDatabaseContext(
+            DbContextOptions<TenantDatabaseContext> options,
+            ITenantDbConnectionStringfactory factory)
             : base(options)
         {
+            TenantDbConnectionStringFactory = factory;
+
+            // would normally do this when selecting a specific tenant to work with. Works well enough in demo
+            Database.Migrate();
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(TenantDbConnectionStringFactory.GetConnectionSting());
+            }
         }
 
         public virtual DbSet<Address> Address { get; set; }
@@ -29,13 +43,7 @@ namespace DatabasePerTenant.Data.Tenant.Models
         public virtual DbSet<VProductAndDescription> VProductAndDescription { get; set; }
         public virtual DbSet<VProductModelCatalogDescription> VProductModelCatalogDescription { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("Server=tcp:sql-databasepertenant-catalog-test.database.windows.net,1433;Initial Catalog=sqldb-dafaultdatabase;Persist Security Info=False;User ID=databasepertenant;Password=1234@Demo;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-            }
-        }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using DatabasePerTenant.WebApi.Extensions;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace DatabasePerTenant.WebApi
 {
@@ -16,11 +13,18 @@ namespace DatabasePerTenant.WebApi
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
+        public static IWebHostBuilder CreateHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((hostingContext, config) =>
+            {
+                config.AddAzureConfigAndKeyvault(hostingContext);
+
+                if (hostingContext.HostingEnvironment.EnvironmentName == Environments.Development
+                    || hostingContext.HostingEnvironment.EnvironmentName == "Test")
                 {
-                    webBuilder.UseStartup<Startup>();
-                });
+                    config.AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json");
+                }
+            })
+            .UseStartup<Startup>();
     }
 }

@@ -4,5 +4,16 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DatabasePerTenant.Business\DatabasePerTenant.Business\DatabasePerTenant.Business.csproj" />
+    <ProjectReference Include="..\DatabasePerTenant.Data.Catalog\DatabasePerTenant.Data.Catalog.csproj" />
+    <ProjectReference Include="..\DatabasePerTenant.Data.Tenant\DatabasePerTenant.Data.Tenant.csproj" />
+  </ItemGroup>
+
 
 </Project>

@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using DatabasePerTenant.Data.Catalog;
+using DatabasePerTenant.WebApi.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace DatabasePerTenant.WebApi
 {
@@ -26,10 +22,16 @@ namespace DatabasePerTenant.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.BuildDependencyRegister(Configuration);
+            services.SetDatabaseConnection(Configuration);
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped(p => p.GetService<IHttpContextAccessor>()?.HttpContext);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ITenantDbManager tenantDbManager)
         {
             if (env.IsDevelopment())
             {
@@ -46,6 +48,8 @@ namespace DatabasePerTenant.WebApi
             {
                 endpoints.MapControllers();
             });
+
+            tenantDbManager.InitializeAndRegisterAllTenants().Wait();
         }
     }
 }

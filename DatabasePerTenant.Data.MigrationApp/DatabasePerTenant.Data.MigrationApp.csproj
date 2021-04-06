@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,15 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.7">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DatabasePerTenant.Data.Catalog\DatabasePerTenant.Data.Catalog.csproj" />
+    <ProjectReference Include="..\DatabasePerTenant.Data.Tenant\DatabasePerTenant.Data.Tenant.csproj" />
+    <ProjectReference Include="..\DatabasePerTenant.Data.Tenant\DatabasePerTenant.Data.Tenant\DatabasePerTenant.Data.Tenant.csproj" />
   </ItemGroup>
 
 </Project>

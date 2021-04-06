@@ -1,13 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabasePerTenant.WebApi", "DatabasePerTenant.WebApi\DatabasePerTenant.WebApi.csproj", "{A654CE90-6C5B-4B01-B5FE-F2B78E9CD3E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabasePerTenant.WebApi", "DatabasePerTenant.WebApi\DatabasePerTenant.WebApi.csproj", "{A654CE90-6C5B-4B01-B5FE-F2B78E9CD3E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabasePerTenant.Data.Catalog", "DatabasePerTenant.Data.Catalog\DatabasePerTenant.Data.Catalog.csproj", "{B2B03B72-8EA0-40B7-B66A-59B9335AD294}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabasePerTenant.Data.Catalog", "DatabasePerTenant.Data.Catalog\DatabasePerTenant.Data.Catalog.csproj", "{B2B03B72-8EA0-40B7-B66A-59B9335AD294}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabasePerTenant.Data.MigrationApp", "DatabasePerTenant.Data.MigrationApp\DatabasePerTenant.Data.MigrationApp.csproj", "{1E67D8FA-E723-4BEF-A5EC-B847E50B4728}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabasePerTenant.Data.MigrationApp", "DatabasePerTenant.Data.MigrationApp\DatabasePerTenant.Data.MigrationApp.csproj", "{1E67D8FA-E723-4BEF-A5EC-B847E50B4728}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabasePerTenant.Shared", "DatabasePerTenant.Shared\DatabasePerTenant.Shared\DatabasePerTenant.Shared.csproj", "{2D23D20C-94A4-45EE-8114-F592C2B20C8C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabasePerTenant.Data.Tenant", "DatabasePerTenant.Data.Tenant\DatabasePerTenant.Data.Tenant.csproj", "{64E5814A-B901-4844-9807-5F751A366E9D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabasePerTenant.Business", "DatabasePerTenant.Business\DatabasePerTenant.Business\DatabasePerTenant.Business.csproj", "{6374F856-BFE2-4277-ABDF-5AAEC4AB4F3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,9 +23,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A654CE90-6C5B-4B01-B5FE-F2B78E9CD3E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -58,5 +61,47 @@ Global
 		{1E67D8FA-E723-4BEF-A5EC-B847E50B4728}.Release|x64.Build.0 = Release|Any CPU
 		{1E67D8FA-E723-4BEF-A5EC-B847E50B4728}.Release|x86.ActiveCfg = Release|Any CPU
 		{1E67D8FA-E723-4BEF-A5EC-B847E50B4728}.Release|x86.Build.0 = Release|Any CPU
+		{2D23D20C-94A4-45EE-8114-F592C2B20C8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D23D20C-94A4-45EE-8114-F592C2B20C8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D23D20C-94A4-45EE-8114-F592C2B20C8C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2D23D20C-94A4-45EE-8114-F592C2B20C8C}.Debug|x64.Build.0 = Debug|Any CPU
+		{2D23D20C-94A4-45EE-8114-F592C2B20C8C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2D23D20C-94A4-45EE-8114-F592C2B20C8C}.Debug|x86.Build.0 = Debug|Any CPU
+		{2D23D20C-94A4-45EE-8114-F592C2B20C8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D23D20C-94A4-45EE-8114-F592C2B20C8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D23D20C-94A4-45EE-8114-F592C2B20C8C}.Release|x64.ActiveCfg = Release|Any CPU
+		{2D23D20C-94A4-45EE-8114-F592C2B20C8C}.Release|x64.Build.0 = Release|Any CPU
+		{2D23D20C-94A4-45EE-8114-F592C2B20C8C}.Release|x86.ActiveCfg = Release|Any CPU
+		{2D23D20C-94A4-45EE-8114-F592C2B20C8C}.Release|x86.Build.0 = Release|Any CPU
+		{64E5814A-B901-4844-9807-5F751A366E9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64E5814A-B901-4844-9807-5F751A366E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64E5814A-B901-4844-9807-5F751A366E9D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{64E5814A-B901-4844-9807-5F751A366E9D}.Debug|x64.Build.0 = Debug|Any CPU
+		{64E5814A-B901-4844-9807-5F751A366E9D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{64E5814A-B901-4844-9807-5F751A366E9D}.Debug|x86.Build.0 = Debug|Any CPU
+		{64E5814A-B901-4844-9807-5F751A366E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64E5814A-B901-4844-9807-5F751A366E9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64E5814A-B901-4844-9807-5F751A366E9D}.Release|x64.ActiveCfg = Release|Any CPU
+		{64E5814A-B901-4844-9807-5F751A366E9D}.Release|x64.Build.0 = Release|Any CPU
+		{64E5814A-B901-4844-9807-5F751A366E9D}.Release|x86.ActiveCfg = Release|Any CPU
+		{64E5814A-B901-4844-9807-5F751A366E9D}.Release|x86.Build.0 = Release|Any CPU
+		{6374F856-BFE2-4277-ABDF-5AAEC4AB4F3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6374F856-BFE2-4277-ABDF-5AAEC4AB4F3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6374F856-BFE2-4277-ABDF-5AAEC4AB4F3E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6374F856-BFE2-4277-ABDF-5AAEC4AB4F3E}.Debug|x64.Build.0 = Debug|Any CPU
+		{6374F856-BFE2-4277-ABDF-5AAEC4AB4F3E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6374F856-BFE2-4277-ABDF-5AAEC4AB4F3E}.Debug|x86.Build.0 = Debug|Any CPU
+		{6374F856-BFE2-4277-ABDF-5AAEC4AB4F3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6374F856-BFE2-4277-ABDF-5AAEC4AB4F3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6374F856-BFE2-4277-ABDF-5AAEC4AB4F3E}.Release|x64.ActiveCfg = Release|Any CPU
+		{6374F856-BFE2-4277-ABDF-5AAEC4AB4F3E}.Release|x64.Build.0 = Release|Any CPU
+		{6374F856-BFE2-4277-ABDF-5AAEC4AB4F3E}.Release|x86.ActiveCfg = Release|Any CPU
+		{6374F856-BFE2-4277-ABDF-5AAEC4AB4F3E}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {38EC0BB2-4543-40FB-B0B6-9B25B5F053FA}
 	EndGlobalSection
 EndGlobal
