@@ -16,7 +16,6 @@
   <ItemGroup>
     <ProjectReference Include="..\DatabasePerTenant.Data.Catalog\DatabasePerTenant.Data.Catalog.csproj" />
     <ProjectReference Include="..\DatabasePerTenant.Data.Tenant\DatabasePerTenant.Data.Tenant.csproj" />
-    <ProjectReference Include="..\DatabasePerTenant.Data.Tenant\DatabasePerTenant.Data.Tenant\DatabasePerTenant.Data.Tenant.csproj" />
   </ItemGroup>
 
 </Project>

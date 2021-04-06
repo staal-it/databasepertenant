@@ -21,7 +21,7 @@ namespace DatabasePerTenant.WebApi.Controllers
         [Route("")]
         public async Task<ActionResult<AddressDto>> GetAddressAsync()
         {
-            var result = default(AddressDto);
+            var result = await Task.FromResult(default(AddressDto));
 
             return Ok(result);
         }
