@@ -13,20 +13,20 @@ namespace DatabasePerTenant.Data.Tenant
 
     public class AddressRepository : IAddressRepository
     {
-        private readonly TenantDatabaseContext TenantDatabaseContext;
-        private readonly IMapper Mapper;
+        private readonly TenantDatabaseContext _tenantDatabaseContext;
+        private readonly IMapper _mapper;
 
         public AddressRepository(TenantDatabaseContext tenantDatabaseContext, IMapper mapper)
         {
-            TenantDatabaseContext = tenantDatabaseContext;
-            Mapper = mapper;
+            _tenantDatabaseContext = tenantDatabaseContext;
+            _mapper = mapper;
         }
 
         public async Task<AddressDto[]> GetAddresses()
         {
-            var addresses = await TenantDatabaseContext.Address.Take(25).ToArrayAsync();
+            var addresses = await _tenantDatabaseContext.Address.Take(25).ToArrayAsync();
 
-            return Mapper.Map<AddressDto[]>(addresses);
+            return _mapper.Map<AddressDto[]>(addresses);
         }
     }
 }

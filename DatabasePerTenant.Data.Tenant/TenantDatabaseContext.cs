@@ -6,14 +6,14 @@ namespace DatabasePerTenant.Data.Tenant
     public partial class TenantDatabaseContext : DbContext
     {
 
-        private readonly ITenantDbConnectionStringfactory TenantDbConnectionStringFactory;
+        private readonly ITenantDbConnectionStringFactory _tenantDbConnectionStringFactory;
 
         public TenantDatabaseContext(
             DbContextOptions<TenantDatabaseContext> options,
-            ITenantDbConnectionStringfactory factory)
+            ITenantDbConnectionStringFactory factory)
             : base(options)
         {
-            TenantDbConnectionStringFactory = factory;
+            _tenantDbConnectionStringFactory = factory;
 
             // would normally do this when selecting a specific tenant to work with. Works well enough in demo
             Database.Migrate();
@@ -23,7 +23,7 @@ namespace DatabasePerTenant.Data.Tenant
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(TenantDbConnectionStringFactory.GetConnectionSting());
+                optionsBuilder.UseSqlServer(_tenantDbConnectionStringFactory.GetConnectionSting());
             }
         }
 

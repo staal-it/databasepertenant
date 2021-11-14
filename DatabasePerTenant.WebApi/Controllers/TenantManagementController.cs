@@ -10,18 +10,18 @@ namespace DatabasePerTenant.WebApi.Controllers
     [ApiController]
     public class TenantManagementController : ControllerBase
     {
-        private readonly ITenantManager TenantManager;
+        private readonly ITenantManager _tenantManager;
 
         public TenantManagementController(ITenantManager tenantManager)
         {
-            TenantManager = tenantManager;
+            _tenantManager = tenantManager;
         }
 
         [HttpPost]
         [Route("new")]
         public async Task<ActionResult<NewTenantDatabaseDto>> CreateNewTenant([FromBody] TenantDto dto)
         {
-            var result = await TenantManager.CreateNewTenant(dto);
+            var result = await _tenantManager.CreateNewTenant(dto);
 
             return Ok(result);
         }
@@ -30,7 +30,7 @@ namespace DatabasePerTenant.WebApi.Controllers
         [Route("clone")]
         public async Task<ActionResult<CloneTenantDto>> CloneTenant([FromBody] CloneTenantDto dto)
         {
-            var result = await TenantManager.CloneTenant(dto);
+            var result = await _tenantManager.CloneTenant(dto);
 
             return Ok(result);
         }
@@ -39,7 +39,7 @@ namespace DatabasePerTenant.WebApi.Controllers
         [Route("remove/{tenantId}")]
         public async Task<ActionResult<RemoveTenantDto>> RemoveTenant(int tenantId)
         {
-            await TenantManager.RemoveTenant(tenantId);
+            await _tenantManager.RemoveTenant(tenantId);
 
             return Ok();
         }
@@ -48,7 +48,7 @@ namespace DatabasePerTenant.WebApi.Controllers
         [Route("firewallrules")]
         public async Task<ActionResult<List<DatabaseFirewallRuleDto>>> GetDatabaseFirewallRulesAsync()
         {
-            var result = await TenantManager.GetDatabaseFirewallRulesAsync();
+            var result = await _tenantManager.GetDatabaseFirewallRulesAsync();
 
             return Ok(result);
         }
@@ -57,7 +57,7 @@ namespace DatabasePerTenant.WebApi.Controllers
         [Route("firewallrules")]
         public async Task<ActionResult<DatabaseFirewallRuleDto>> CreateNewDatabaseFirewallRulesAsync([FromBody] DatabaseFirewallRuleDto dto)
         {
-            var result = await TenantManager.CreateNewDatabaseFirewallRulesAsync(dto);
+            var result = await _tenantManager.CreateNewDatabaseFirewallRulesAsync(dto);
 
             return Ok(result);
         }
@@ -66,7 +66,7 @@ namespace DatabasePerTenant.WebApi.Controllers
         [Route("firewallrules/{databaseFirewallRuleName}")]
         public async Task<ActionResult<DatabaseFirewallRuleDto>> RemoveDatabaseFirewallRulesAsync(string databaseFirewallRuleName)
         {
-            await TenantManager.RemoveDatabaseFirewallRulesAsync(databaseFirewallRuleName);
+            await _tenantManager.RemoveDatabaseFirewallRulesAsync(databaseFirewallRuleName);
 
             return Ok();
         }

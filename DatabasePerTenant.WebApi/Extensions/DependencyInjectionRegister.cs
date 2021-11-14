@@ -22,17 +22,17 @@ namespace DatabasePerTenant.WebApi.Extensions
             services.AddScoped<ICatalogRepository, CatalogRepository>();
             services.AddDbContext<TenantDatabaseContext>();
 
-            services.AddScoped<IShardingSQLHelper, ShardingSQLHelper>();
-            services.AddScoped<IFirewallRulesSQLHelper, FirewallRulesSQLHelper>();
+            services.AddScoped<IShardingSqlHelper, ShardingSqlHelper>();
+            services.AddScoped<IFirewallRulesSqlHelper, FirewallRulesSqlHelper>();
             services.AddSingleton<IShardingManager, ShardingManager>();
             services.AddSingleton<IKeyVaultClient, KeyVaultClient>();
             services.AddScoped<IInfrastructureClient, InfrastructureClient>();
             services.AddScoped<ITenantDbManager, TenantDbManager>();
-            services.AddScoped<IShardingSQLHelper, ShardingSQLHelper>();
-            services.AddScoped<IFirewallRulesSQLHelper, FirewallRulesSQLHelper>();
+            services.AddScoped<IShardingSqlHelper, ShardingSqlHelper>();
+            services.AddScoped<IFirewallRulesSqlHelper, FirewallRulesSqlHelper>();
             services.AddSingleton<IShardingManager, ShardingManager>();
             services.AddScoped<IStorePerRequestTenantData, StorePerRequestTenantData>();
-            services.AddScoped<ITenantDbConnectionStringfactory, TenantDbConnectionStringfactory>();
+            services.AddScoped<ITenantDbConnectionStringFactory, TenantDbConnectionStringFactory>();
 
             services.AddAutoMapper(typeof(IAutoRegisterData));
 

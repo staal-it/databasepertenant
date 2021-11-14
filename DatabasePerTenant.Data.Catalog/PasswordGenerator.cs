@@ -7,7 +7,7 @@ namespace DatabasePerTenant.Data.Catalog
     {
         public static string GeneratePassword(int length, int numberOfNonAlphanumericCharacters)
         {
-            char[] Punctuations = "!@#$%^&*()_-+=[{]};:>|./?".ToCharArray();
+            char[] punctuations = "!@#$%^&*()_-+=[{]};:>|./?".ToCharArray();
             if (length < 1 || length > 128)
             {
                 throw new ArgumentException(nameof(length));
@@ -45,7 +45,7 @@ namespace DatabasePerTenant.Data.Catalog
                     }
                     else
                     {
-                        characterBuffer[iter] = Punctuations[i - 62];
+                        characterBuffer[iter] = punctuations[i - 62];
                         count++;
                     }
                 }
@@ -67,7 +67,7 @@ namespace DatabasePerTenant.Data.Catalog
                     }
                     while (!char.IsLetterOrDigit(characterBuffer[k]));
 
-                    characterBuffer[k] = Punctuations[rand.Next(0, Punctuations.Length)];
+                    characterBuffer[k] = punctuations[rand.Next(0, punctuations.Length)];
                 }
 
                 return new string(characterBuffer);

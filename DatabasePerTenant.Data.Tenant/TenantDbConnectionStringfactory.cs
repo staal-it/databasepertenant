@@ -2,30 +2,29 @@
 
 namespace DatabasePerTenant.Data.Tenant
 {
-    public interface ITenantDbConnectionStringfactory
+    public interface ITenantDbConnectionStringFactory
     {
         string GetConnectionSting();
     }
 
-    public class TenantDbConnectionStringfactory : ITenantDbConnectionStringfactory
+    public class TenantDbConnectionStringFactory : ITenantDbConnectionStringFactory
     {
-        private readonly IShardingManager ShardingManager;
-        private IStorePerRequestTenantData StorePerRequestTenantData;
+        private readonly IShardingManager _shardingManager;
+        private readonly IStorePerRequestTenantData _storePerRequestTenantData;
 
-        public TenantDbConnectionStringfactory(IShardingManager shardingManager, IStorePerRequestTenantData storePerRequestTenantData)
+        public TenantDbConnectionStringFactory(IShardingManager shardingManager, IStorePerRequestTenantData storePerRequestTenantData)
         {
-            ShardingManager = shardingManager;
-            StorePerRequestTenantData = storePerRequestTenantData;
+            _shardingManager = shardingManager;
+            _storePerRequestTenantData = storePerRequestTenantData;
         }
 
         public string GetConnectionSting()
         {
+            var tenantId = _storePerRequestTenantData.GetTenantId();
             // TODO: check if id belongs to logged in user
-            var tenantId = StorePerRequestTenantData.GetTenantId();
+            var sqlConnectionString = _shardingManager.OpenConnectionForTenant(tenantId).Result;
 
-            var sqlConnectionsting = ShardingManager.OpenConnectionForTenant(tenantId).Result;
-
-            return sqlConnectionsting;
+            return sqlConnectionString;
         }
     }
 }

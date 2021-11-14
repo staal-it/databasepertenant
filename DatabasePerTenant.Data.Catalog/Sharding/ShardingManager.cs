@@ -11,16 +11,16 @@ namespace DatabasePerTenant.Data.Catalog.Sharding
 
         void RegisterShardIfNonExisting(string tenantDatabase, int tenantId, string tenantServer);
 
-        void RemoveShard(string tenantDatbase, int tenantId, string tenantServer);
+        void RemoveShard(string tenantDatabase, int tenantId, string tenantServer);
 
         Task<string> OpenConnectionForTenant(int tenantId);
     }
 
     public class ShardingManager : IShardingManager
     {
-        private readonly DatabaseConfig DatabaseConfig;
-        private readonly CatalogConfig CatalogConfig;
-        private readonly IKeyVaultClient KeyVaultClient;
+        private readonly DatabaseConfig _databaseConfig;
+        private readonly CatalogConfig _catalogConfig;
+        private readonly IKeyVaultClient _keyVaultClient;
 
         private ShardMapManager ShardMapManager { get; set; }
         private static ListShardMap<int> ShardMap { get; set; }
@@ -32,37 +32,27 @@ namespace DatabasePerTenant.Data.Catalog.Sharding
             CatalogConfig catalogConfig,
             IKeyVaultClient keyVaultClient)
         {
-            DatabaseConfig = databaseConfig;
-            CatalogConfig = catalogConfig;
-            KeyVaultClient = keyVaultClient;
+            _databaseConfig = databaseConfig;
+            _catalogConfig = catalogConfig;
+            _keyVaultClient = keyVaultClient;
         }
 
         public void Initialize()
         {
-            ShardMapManager = GetShardMapManager();
-
-            ShardMap = GetShardMap();
-        }
-
-        private ShardMapManager GetShardMapManager()
-        {
             var catalogDbConnectionString = GetConnectionStingWithCredentials();
 
-            return !ShardMapManagerFactory.TryGetSqlShardMapManager(catalogDbConnectionString, ShardMapManagerLoadPolicy.Lazy, out ShardMapManager shardMapManager)
-                                ? ShardMapManagerFactory.CreateSqlShardMapManager(catalogDbConnectionString)
-                                : shardMapManager;
+            ShardMapManager = !ShardMapManagerFactory.TryGetSqlShardMapManager(catalogDbConnectionString, ShardMapManagerLoadPolicy.Lazy, out ShardMapManager shardMapManager)
+                ? ShardMapManagerFactory.CreateSqlShardMapManager(catalogDbConnectionString)
+                : shardMapManager;
+
+            ShardMap = !ShardMapManager.TryGetListShardMap(_catalogConfig.CatalogDatabase, out ListShardMap<int> shardMap)
+                ? ShardMapManager.CreateListShardMap<int>(_catalogConfig.CatalogDatabase)
+                : shardMap;
         }
 
-        private ListShardMap<int> GetShardMap()
+        public void RegisterShardIfNonExisting(string tenantDatabase, int tenantId, string tenantServer)
         {
-            return !ShardMapManager.TryGetListShardMap(CatalogConfig.CatalogDatabase, out ListShardMap<int> shardMap)
-                            ? ShardMapManager.CreateListShardMap<int>(CatalogConfig.CatalogDatabase)
-                            : shardMap;
-        }
-
-        public void RegisterShardIfNonExisting(string tenantDatbase, int tenantId, string tenantServer)
-        {
-            var shardLocation = new ShardLocation(tenantServer, tenantDatbase, SqlProtocol.Tcp, DatabaseServerPort);
+            var shardLocation = new ShardLocation(tenantServer, tenantDatabase, SqlProtocol.Tcp, DatabaseServerPort);
 
             if (!ShardMap.TryGetShard(shardLocation, out Shard shard))
             {
@@ -77,7 +67,7 @@ namespace DatabasePerTenant.Data.Catalog.Sharding
             }
         }
 
-        public void RemoveShard(string tenantDatbase, int tenantId, string tenantServer)
+        public void RemoveShard(string tenantDatabase, int tenantId, string tenantServer)
         {
             if (ShardMap.TryGetMappingForKey(tenantId, out PointMapping<int> mapping))
             {
@@ -88,7 +78,7 @@ namespace DatabasePerTenant.Data.Catalog.Sharding
 
                 ShardMap.DeleteMapping(mapping);
 
-                var shardLocation = new ShardLocation(tenantServer, tenantDatbase, SqlProtocol.Tcp, DatabaseServerPort);
+                var shardLocation = new ShardLocation(tenantServer, tenantDatabase, SqlProtocol.Tcp, DatabaseServerPort);
 
                 if (ShardMap.TryGetShard(shardLocation, out Shard shard))
                 {
@@ -99,34 +89,35 @@ namespace DatabasePerTenant.Data.Catalog.Sharding
 
         public async Task<string> OpenConnectionForTenant(int tenantId)
         {
-            var baseConnSting = await GetBaseShardConnectionSting(tenantId);
+            var baseConnectionString = await GetBaseShardConnectionSting(tenantId);
 
-            var connection = await ShardMap.OpenConnectionForKeyAsync(tenantId, baseConnSting, ConnectionOptions.Validate);
+            var connection = await ShardMap.OpenConnectionForKeyAsync(tenantId, baseConnectionString, ConnectionOptions.Validate);
 
             return connection.ConnectionString;
         }
 
         private async Task<string> GetBaseShardConnectionSting(int tenantId)
         {
-            var userName = await KeyVaultClient.GetSecret(KeyVaultClient.GetUsernameKey(tenantId));
-            var password = await KeyVaultClient.GetSecret(KeyVaultClient.GetPasswordKey(tenantId));
+            var userName = await _keyVaultClient.GetSecret(_keyVaultClient.GetUsernameKey(tenantId));
+            var password = await _keyVaultClient.GetSecret(_keyVaultClient.GetPasswordKey(tenantId));
 
-            var connSting = $"User ID={userName}; Password='{password}'; Trusted_Connection=False; Encrypt=True; Connection Timeout=30;Persist Security Info=True;";
+            var baseConnectionString = $"User ID={userName}; Password='{password}'; Trusted_Connection=False; " +
+                                        $"Encrypt=True; Connection Timeout=30;Persist Security Info=True;";
 
-            return connSting;
+            return baseConnectionString;
         }
 
         private string GetConnectionStingWithCredentials()
         {
             var connectionStringBuilder = new SqlConnectionStringBuilder
             {
-                UserID = DatabaseConfig.DatabaseUser,
-                Password = DatabaseConfig.DatabasePassword,
+                UserID = _databaseConfig.DatabaseUser,
+                Password = _databaseConfig.DatabasePassword,
                 ApplicationName = "EntityFramework",
-                ConnectTimeout = DatabaseConfig.ConnectionTimeOut,
+                ConnectTimeout = _databaseConfig.ConnectionTimeOut,
                 LoadBalanceTimeout = 15,
-                DataSource = $"{SqlProtocol.Tcp}:{CatalogConfig.CatalogServer},{DatabaseServerPort}",
-                InitialCatalog = CatalogConfig.CatalogDatabase
+                DataSource = $"{SqlProtocol.Tcp}:{_catalogConfig.CatalogServer},{DatabaseServerPort}",
+                InitialCatalog = _catalogConfig.CatalogDatabase
             };
 
             return connectionStringBuilder.ConnectionString;

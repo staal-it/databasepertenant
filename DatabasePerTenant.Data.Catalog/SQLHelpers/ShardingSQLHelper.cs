@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace DatabasePerTenant.Data.Catalog.SQLHelpers
 {
-    public interface IShardingSQLHelper
+    public interface IShardingSqlHelper
     {
         Task AddNewUser(string userName, string password, string tenantServer, string databaseName);
-        void ClearTenantDBOfShardingDataAfterClone(string tenantServer, string databaseName);
+        void ClearTenantDbOfShardingDataAfterClone(string tenantServer, string databaseName);
         Task DropDatabase(string tenantServer, string databaseToDrop);
         List<string> GetAllTenantNames(string tenantServer);
     }
 
-    public class ShardingSQLHelper : SQLHelperBase, IShardingSQLHelper
+    public class ShardingSqlHelper : SqlHelperBase, IShardingSqlHelper
     {
-        public ShardingSQLHelper(DatabaseConfig databaseConfig) : base(databaseConfig)
+        public ShardingSqlHelper(DatabaseConfig databaseConfig) : base(databaseConfig)
         {
         }
 
@@ -80,7 +80,7 @@ namespace DatabasePerTenant.Data.Catalog.SQLHelpers
             }
         }
 
-        public void ClearTenantDBOfShardingDataAfterClone(string tenantServer, string databaseName)
+        public void ClearTenantDbOfShardingDataAfterClone(string tenantServer, string databaseName)
         {
             var connectionSting = GetConnectionString(tenantServer, databaseName);
 

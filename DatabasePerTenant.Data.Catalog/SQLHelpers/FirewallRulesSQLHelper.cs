@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace DatabasePerTenant.Data.Catalog.SQLHelpers
 {
-    public interface IFirewallRulesSQLHelper
+    public interface IFirewallRulesSqlHelper
     {
         Task<List<DatabaseFirewallRuleDto>> GetDatabaseFirewallRules(string tenantServer, string tenantDatabase);
         Task AddDatabaseFirewallRules(string tenantServer, string tenantDatabase, DatabaseFirewallRuleDto databaseFirewallRuleDto);
         Task RemoveDatabaseFirewallRule(string tenantServer, string tenantDatabase, string databaseFirewallRuleName);
     }
 
-    public class FirewallRulesSQLHelper : SQLHelperBase, IFirewallRulesSQLHelper
+    public class FirewallRulesSqlHelper : SqlHelperBase, IFirewallRulesSqlHelper
     {
-        public FirewallRulesSQLHelper(DatabaseConfig databaseConfig) : base(databaseConfig)
+        public FirewallRulesSqlHelper(DatabaseConfig databaseConfig) : base(databaseConfig)
         {
         }
 
