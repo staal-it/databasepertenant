@@ -16,25 +16,25 @@ namespace DatabasePerTenant.Data.Catalog
 
     public class KeyVaultClient : IKeyVaultClient
     {
-        private readonly SecretClient Client;
+        private readonly SecretClient _client;
 
         public KeyVaultClient(IConfiguration configuration)
         {
             var keyVaultUrl = configuration["KeyVault:Endpoint"];
             var cred = new ChainedTokenCredential(new ManagedIdentityCredential(), new AzureCliCredential());
-            Client = new SecretClient(new Uri(keyVaultUrl), cred);
+            _client = new SecretClient(new Uri(keyVaultUrl), cred);
         }
 
         public async Task AddSecret(string secretName, string secretValue)
         {
             var secret = new KeyVaultSecret(secretName, secretValue);
 
-            await Client.SetSecretAsync(secret);
+            await _client.SetSecretAsync(secret);
         }
 
         public async Task<string> GetSecret(string secretName)
         {
-            var secret = await Client.GetSecretAsync(secretName);
+            var secret = await _client.GetSecretAsync(secretName);
 
             return secret.Value.Value;
         }

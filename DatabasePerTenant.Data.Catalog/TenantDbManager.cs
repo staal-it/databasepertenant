@@ -23,36 +23,36 @@ namespace DatabasePerTenant.Data.Catalog
 
     public class TenantDbManager : ITenantDbManager
     {
-        private readonly IShardingManager ShardingManager;
-        private readonly ICatalogRepository CatalogRepository;
-        private readonly IInfrastructureClient InfrastructureClient;
-        private readonly IShardingSQLHelper ShardingSQLHelper;
-        private readonly IKeyVaultClient KeyVaultClient;
-        private readonly IConfiguration Configuration;
+        private readonly IShardingManager _shardingManager;
+        private readonly ICatalogRepository _catalogRepository;
+        private readonly IInfrastructureClient _infrastructureClient;
+        private readonly IShardingSqlHelper _shardingSqlHelper;
+        private readonly IKeyVaultClient _keyVaultClient;
+        private readonly IConfiguration _configuration;
 
-        private readonly string CurrentTenantDatabase;
+        private readonly string _currentTenantDatabase;
 
         public TenantDbManager(
             IShardingManager shardingManager,
             ICatalogRepository catalogRepository,
             IInfrastructureClient infrastructureClient,
-            IShardingSQLHelper shardingSQLHelper,
+            IShardingSqlHelper shardingSqlHelper,
             IKeyVaultClient keyVaultClient,
             IConfiguration configuration)
         {
-            ShardingManager = shardingManager;
-            CatalogRepository = catalogRepository;
-            InfrastructureClient = infrastructureClient;
-            ShardingSQLHelper = shardingSQLHelper;
-            KeyVaultClient = keyVaultClient;
-            Configuration = configuration;
+            _shardingManager = shardingManager;
+            _catalogRepository = catalogRepository;
+            _infrastructureClient = infrastructureClient;
+            _shardingSqlHelper = shardingSqlHelper;
+            _keyVaultClient = keyVaultClient;
+            _configuration = configuration;
 
-            CurrentTenantDatabase = $"{Configuration["TenantConfig:TenantServer"]}.database.windows.net";
+            _currentTenantDatabase = $"{_configuration["TenantConfig:TenantServer"]}.database.windows.net";
         }
 
         public async Task InitializeAndRegisterAllTenants()
         {
-            ShardingManager.Initialize();
+            _shardingManager.Initialize();
 
             // Only enable while debugging shard functionality locally:
             //await RegisterAllTenantInShardAsync();
@@ -60,7 +60,7 @@ namespace DatabasePerTenant.Data.Catalog
 
         private async Task RegisterAllTenantInShardAsync()
         {
-            var tenantNames = ShardingSQLHelper.GetAllTenantNames(CurrentTenantDatabase);
+            var tenantNames = _shardingSqlHelper.GetAllTenantNames(_currentTenantDatabase);
 
             foreach (var tenantName in tenantNames)
             {
@@ -73,7 +73,7 @@ namespace DatabasePerTenant.Data.Catalog
             var tenantServer = FindAvailableTenantServer();
 
             var normalizedTenantName = NormalizeTenantName(tenantName);
-            var tenantDatabase = await InfrastructureClient.CreateNewTenantDatabase(normalizedTenantName);
+            var tenantDatabase = await _infrastructureClient.CreateNewTenantDatabase(normalizedTenantName);
 
             var tenantId = await RegisterTenantAsync(tenantName, tenantDatabase, tenantServer);
 
@@ -88,10 +88,10 @@ namespace DatabasePerTenant.Data.Catalog
 
             var password = PasswordGenerator.GeneratePassword(16, 6);
 
-            await ShardingSQLHelper.AddNewUser(username, password, tenantServer, tenantDatabase);
+            await _shardingSqlHelper.AddNewUser(username, password, tenantServer, tenantDatabase);
 
-            await KeyVaultClient.AddSecret(KeyVaultClient.GetUsernameKey(tenantId), username);
-            await KeyVaultClient.AddSecret(KeyVaultClient.GetPasswordKey(tenantId), password);
+            await _keyVaultClient.AddSecret(_keyVaultClient.GetUsernameKey(tenantId), username);
+            await _keyVaultClient.AddSecret(_keyVaultClient.GetPasswordKey(tenantId), password);
 
             return new NewTenantDatabaseDto
             {
@@ -105,28 +105,28 @@ namespace DatabasePerTenant.Data.Catalog
 
         public async Task<int> CloneTenantAsync(int tenantToCloneId, string tenantName)
         {
-            var tenantDatabase = await InfrastructureClient.CloneTenantDatabase(tenantToCloneId, NormalizeTenantName(tenantName));
+            var tenantDatabase = await _infrastructureClient.CloneTenantDatabase(tenantToCloneId, NormalizeTenantName(tenantName));
 
             var tenantServer = FindAvailableTenantServer();
 
-            ShardingSQLHelper.ClearTenantDBOfShardingDataAfterClone(tenantServer, tenantDatabase);
+            _shardingSqlHelper.ClearTenantDbOfShardingDataAfterClone(tenantServer, tenantDatabase);
 
             return await RegisterTenantAsync(tenantName, tenantDatabase, tenantServer);
         }
 
         public async Task RemoveTenantAsync(int tenantId)
         {
-            var tenant = await CatalogRepository.GetTenant(tenantId);
+            var tenant = await _catalogRepository.GetTenant(tenantId);
 
             if (tenant != null)
             {
-                ShardingManager.RemoveShard(tenant.DatabaseName, tenantId, tenant.ElasticPool.Server.ServerName);
+                _shardingManager.RemoveShard(tenant.DatabaseName, tenantId, tenant.ElasticPool.Server.ServerName);
 
-                await CatalogRepository.RemoveTenantAsync(tenantId);
+                await _catalogRepository.RemoveTenantAsync(tenantId);
 
-                await CatalogRepository.SaveChangesAsync();
+                await _catalogRepository.SaveChangesAsync();
 
-                await ShardingSQLHelper.DropDatabase(tenant.ElasticPool.Server.ServerName, tenant.DatabaseName);
+                await _shardingSqlHelper.DropDatabase(tenant.ElasticPool.Server.ServerName, tenant.DatabaseName);
             }
         }
 
@@ -141,7 +141,7 @@ namespace DatabasePerTenant.Data.Catalog
         {
             var tenantId = GetTenantKey(tenantDatabase);
 
-            ShardingManager.RegisterShardIfNonExisting(tenantDatabase, tenantId, tenantServer);
+            _shardingManager.RegisterShardIfNonExisting(tenantDatabase, tenantId, tenantServer);
 
             await AddTenant(tenantId, tenantName, tenantDatabase, tenantServer).ConfigureAwait(false);
 
@@ -150,23 +150,23 @@ namespace DatabasePerTenant.Data.Catalog
 
         private async Task AddTenant(int tenantId, string tenantName, string tenantDatabase, string tenantServerName)
         {
-            var server = await CatalogRepository.GetOrCreateTenantServer(tenantServerName);
+            var server = await _catalogRepository.GetOrCreateTenantServer(tenantServerName);
 
-            var elasticpool = await CatalogRepository.GetOrCreateElasticPool(server);
+            var elasticpool = await _catalogRepository.GetOrCreateElasticPool(server);
 
-            await CatalogRepository.AddTenant(1, tenantId, tenantName, tenantDatabase, elasticpool);
+            await _catalogRepository.AddTenant(1, tenantId, tenantName, tenantDatabase, elasticpool);
 
-            await CatalogRepository.SaveChangesAsync();
+            await _catalogRepository.SaveChangesAsync();
         }
 
         private string FindAvailableTenantServer()
         {
-            return CurrentTenantDatabase;
+            return _currentTenantDatabase;
         }
 
         private string GetServerByTenant(string tenantName)
         {
-            return CurrentTenantDatabase;
+            return _currentTenantDatabase;
         }
 
         private int GetTenantKey(string tenantName)

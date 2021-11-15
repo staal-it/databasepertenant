@@ -19,70 +19,70 @@ namespace DatabasePerTenant.Business
 
     public class TenantManager : ITenantManager
     {
-        private readonly ITenantDbManager TenantDbManager;
-        private IFirewallRulesSQLHelper FirewallRulesSQLHelper;
-        private readonly ICatalogRepository CatalogRepository;
-        private readonly IStorePerRequestTenantData StorePerRequestTenantData;
+        private readonly ITenantDbManager _tenantDbManager;
+        private IFirewallRulesSqlHelper _firewallRulesSqlHelper;
+        private readonly ICatalogRepository _catalogRepository;
+        private readonly IStorePerRequestTenantData _storePerRequestTenantData;
 
         public TenantManager(ITenantDbManager tenantDbManager,
-            IFirewallRulesSQLHelper firewallRulesSQLHelper,
+            IFirewallRulesSqlHelper firewallRulesSqlHelper,
             ICatalogRepository catalogRepository,
             IStorePerRequestTenantData storePerRequestTenantData)
         {
-            TenantDbManager = tenantDbManager;
-            FirewallRulesSQLHelper = firewallRulesSQLHelper;
-            CatalogRepository = catalogRepository;
-            StorePerRequestTenantData = storePerRequestTenantData;
+            _tenantDbManager = tenantDbManager;
+            _firewallRulesSqlHelper = firewallRulesSqlHelper;
+            _catalogRepository = catalogRepository;
+            _storePerRequestTenantData = storePerRequestTenantData;
         }
 
         public async Task<NewTenantDatabaseDto> CreateNewTenant(TenantDto dto)
         {
-            var newTenantDatabase = await TenantDbManager.RegisterNewTenantAsync(dto.TenantName);
+            var newTenantDatabase = await _tenantDbManager.RegisterNewTenantAsync(dto.TenantName);
 
             return newTenantDatabase;
         }
 
         public async Task<int> CloneTenant(CloneTenantDto dto)
         {
-            var tenantId = await TenantDbManager.CloneTenantAsync(dto.TenantToCloneId, dto.CloneName);
+            var tenantId = await _tenantDbManager.CloneTenantAsync(dto.TenantToCloneId, dto.CloneName);
 
             return tenantId;
         }
 
         public async Task RemoveTenant(int tenantId)
         {
-            await TenantDbManager.RemoveTenantAsync(tenantId);
+            await _tenantDbManager.RemoveTenantAsync(tenantId);
         }
 
         public async Task<List<DatabaseFirewallRuleDto>> GetDatabaseFirewallRulesAsync()
         {
-            var tenantId = StorePerRequestTenantData.GetTenantId();
+            var tenantId = _storePerRequestTenantData.GetTenantId();
 
-            var tenant = await CatalogRepository.GetTenant(tenantId);
+            var tenant = await _catalogRepository.GetTenant(tenantId);
 
-            var firewallRules = await FirewallRulesSQLHelper.GetDatabaseFirewallRules(tenant.ElasticPool.Server.ServerName, tenant.DatabaseName);
+            var firewallRules = await _firewallRulesSqlHelper.GetDatabaseFirewallRules(tenant.ElasticPool.Server.ServerName, tenant.DatabaseName);
 
             return firewallRules;
         }
 
         public async Task<DatabaseFirewallRuleDto> CreateNewDatabaseFirewallRulesAsync(DatabaseFirewallRuleDto dto)
         {
-            var tenantId = StorePerRequestTenantData.GetTenantId();
+            var tenantId = _storePerRequestTenantData.GetTenantId();
 
-            var tenant = await CatalogRepository.GetTenant(tenantId);
+            var tenant = await _catalogRepository.GetTenant(tenantId);
 
-            await FirewallRulesSQLHelper.AddDatabaseFirewallRules(tenant.ElasticPool.Server.ServerName, tenant.DatabaseName, dto);
+            await _firewallRulesSqlHelper.AddDatabaseFirewallRules(tenant.ElasticPool.Server.ServerName, tenant.DatabaseName, dto);
 
             return dto;
         }
 
         public async Task RemoveDatabaseFirewallRulesAsync(string databaseFirewallRuleName)
         {
-            var tenantId = StorePerRequestTenantData.GetTenantId();
+            var tenantId = _storePerRequestTenantData.GetTenantId();
 
-            var tenant = await CatalogRepository.GetTenant(tenantId);
+            var tenant = await _catalogRepository.GetTenant(tenantId);
 
-            await FirewallRulesSQLHelper.RemoveDatabaseFirewallRule(tenant.ElasticPool.Server.ServerName, tenant.DatabaseName, databaseFirewallRuleName);
+            await _firewallRulesSqlHelper.RemoveDatabaseFirewallRule(tenant.ElasticPool.Server.ServerName, tenant.DatabaseName, databaseFirewallRuleName);
         }
     }
 }

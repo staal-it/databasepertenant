@@ -11,16 +11,16 @@ namespace DatabasePerTenant.Business
 
     public class AddressManager : IAddressManager
     {
-        private readonly IAddressRepository addressRepository;
+        private readonly IAddressRepository _addressRepository;
 
         public AddressManager(IAddressRepository addressRepository)
         {
-            this.addressRepository = addressRepository;
+            this._addressRepository = addressRepository;
         }
 
         public async Task<AddressDto[]> GetAddresses()
         {
-            var addresses = await addressRepository.GetAddresses();
+            var addresses = await _addressRepository.GetAddresses();
 
             return addresses;
         }

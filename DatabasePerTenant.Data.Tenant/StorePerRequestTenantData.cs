@@ -9,17 +9,17 @@ namespace DatabasePerTenant.Data.Tenant
 
     public class StorePerRequestTenantData : IStorePerRequestTenantData
     {
-        private readonly HttpContext HttpContext;
+        private readonly HttpContext _httpContext;
 
         public StorePerRequestTenantData(HttpContext httpContext)
         {
-            HttpContext = httpContext;
+            _httpContext = httpContext;
         }
 
         public int GetTenantId()
         {
-            int tenantId = -1;
-            if (HttpContext != null && HttpContext.Request.Headers.TryGetValue("tenantId", out var tenantIdFromHeader))
+            var tenantId = -1;
+            if (_httpContext != null && _httpContext.Request.Headers.TryGetValue("tenantId", out var tenantIdFromHeader))
             {
                 tenantId = int.Parse(tenantIdFromHeader);
             }

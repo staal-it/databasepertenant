@@ -22,11 +22,11 @@ namespace DatabasePerTenant.Data.MigrationApp
                 var optionsBuilder = new DbContextOptionsBuilder<TenantDatabaseContext>();
                 optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=databasepertenant;persist security info=True;Integrated Security=SSPI;");
 
-                return new TenantDatabaseContext(optionsBuilder.Options, new MigrationTenantDbConnectionStringfactory());
+                return new TenantDatabaseContext(optionsBuilder.Options, new MigrationTenantDbConnectionStringFactory());
             }
         }
 
-        public class MigrationTenantDbConnectionStringfactory : ITenantDbConnectionStringfactory
+        public class MigrationTenantDbConnectionStringFactory : ITenantDbConnectionStringFactory
         {
             public string GetConnectionSting()
             {

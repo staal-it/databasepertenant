@@ -3,19 +3,19 @@ using Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement;
 
 namespace DatabasePerTenant.Data.Catalog.SQLHelpers
 {
-    public class SQLHelperBase
+    public class SqlHelperBase
     {
         private const int DatabaseServerPort = 1433;
-        private readonly DatabaseConfig DatabaseConfig;
+        private readonly DatabaseConfig _databaseConfig;
 
-        public SQLHelperBase(DatabaseConfig databaseConfig)
+        public SqlHelperBase(DatabaseConfig databaseConfig)
         {
-            DatabaseConfig = databaseConfig;
+            _databaseConfig = databaseConfig;
         }
 
         protected string GetConnectionString(string tenantServer, string databaseName = "")
         {
-            var connectionSting = $"Server={SqlProtocol.Tcp}:{tenantServer},{DatabaseServerPort};Database={databaseName};User ID={DatabaseConfig.DatabaseUser};Password={DatabaseConfig.DatabasePassword};Trusted_Connection=False;Encrypt=True;Connection Timeout={DatabaseConfig.ConnectionTimeOut};";
+            var connectionSting = $"Server={SqlProtocol.Tcp}:{tenantServer},{DatabaseServerPort};Database={databaseName};User ID={_databaseConfig.DatabaseUser};Password={_databaseConfig.DatabasePassword};Trusted_Connection=False;Encrypt=True;Connection Timeout={_databaseConfig.ConnectionTimeOut};";
 
             return connectionSting;
         }

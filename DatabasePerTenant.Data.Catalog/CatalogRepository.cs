@@ -29,8 +29,8 @@ namespace DatabasePerTenant.Data.Catalog
     
     public class CatalogRepository : ICatalogRepository
     {
-        private readonly CatalogDbContext CatalogDbContext;
-        private readonly IMapper Mapper;
+        private readonly CatalogDbContext _catalogDbContext;
+        private readonly IMapper _mapper;
 
         private static readonly string DefaultElasticPoolName = "Pool1";
 
@@ -38,17 +38,17 @@ namespace DatabasePerTenant.Data.Catalog
             CatalogDbContext catalogDbContext, 
             IMapper mpper)
         {
-            CatalogDbContext = catalogDbContext;
-            Mapper = mpper;
+            _catalogDbContext = catalogDbContext;
+            _mapper = mpper;
         }
 
         public async Task<List<TenantDto>> GetAllTenants()
         {
-            var allTenantsList = await CatalogDbContext.Tenants.ToListAsync();
+            var allTenantsList = await _catalogDbContext.Tenants.ToListAsync();
 
             if (allTenantsList.Any())
             {
-                return Mapper.Map<List<TenantDto>>(allTenantsList);
+                return _mapper.Map<List<TenantDto>>(allTenantsList);
             }
 
             return null;
@@ -56,14 +56,14 @@ namespace DatabasePerTenant.Data.Catalog
 
         public async Task<Tenant> GetTenant(int tenantId)
         {
-            var tenant = await CatalogDbContext.Tenants.Include(x => x.ElasticPool.Server).FirstOrDefaultAsync(i => i.TenantId == tenantId);
+            var tenant = await _catalogDbContext.Tenants.Include(x => x.ElasticPool.Server).FirstOrDefaultAsync(i => i.TenantId == tenantId);
 
             return tenant;
         }
 
         public async Task AddTenant(int customerId, int tenantId, string tenantName, string databaseName, ElasticPool elasticPool)
         {
-            var tenantExists = await CatalogDbContext.Tenants.AnyAsync(x => x.TenantId == tenantId);
+            var tenantExists = await _catalogDbContext.Tenants.AnyAsync(x => x.TenantId == tenantId);
 
             if (!tenantExists)
             {
@@ -78,13 +78,13 @@ namespace DatabasePerTenant.Data.Catalog
                     LastUpdated = DateTime.Now
                 };
 
-                CatalogDbContext.Tenants.Add(tenant);
+                _catalogDbContext.Tenants.Add(tenant);
             }
         }
 
         public async Task<ElasticPool> GetOrCreateElasticPool(Server server)
         {
-            var elasticPool = await CatalogDbContext.ElasticPools.FirstOrDefaultAsync(x => x.ElasticPoolName == DefaultElasticPoolName);
+            var elasticPool = await _catalogDbContext.ElasticPools.FirstOrDefaultAsync(x => x.ElasticPoolName == DefaultElasticPoolName);
 
             if (elasticPool == null)
             {
@@ -95,7 +95,7 @@ namespace DatabasePerTenant.Data.Catalog
                     LastUpdated = DateTime.Now
                 };
 
-                CatalogDbContext.ElasticPools.Add(elasticPool);
+                _catalogDbContext.ElasticPools.Add(elasticPool);
             }
 
             return elasticPool;
@@ -103,7 +103,7 @@ namespace DatabasePerTenant.Data.Catalog
 
         public async Task<Server> GetOrCreateTenantServer(string tenantServerName)
         {
-            var server = await CatalogDbContext.Servers.FirstOrDefaultAsync(x => x.ServerName == tenantServerName);
+            var server = await _catalogDbContext.Servers.FirstOrDefaultAsync(x => x.ServerName == tenantServerName);
 
             if (server == null)
             {
@@ -113,7 +113,7 @@ namespace DatabasePerTenant.Data.Catalog
                     LastUpdated = DateTime.Now
                 };
 
-                CatalogDbContext.Servers.Add(server);
+                _catalogDbContext.Servers.Add(server);
             }
 
             return server;
@@ -121,17 +121,17 @@ namespace DatabasePerTenant.Data.Catalog
 
         public async Task RemoveTenantAsync(int tenantId)
         {
-            var tenant = await CatalogDbContext.Tenants.FirstOrDefaultAsync(i => i.TenantId == tenantId);
+            var tenant = await _catalogDbContext.Tenants.FirstOrDefaultAsync(i => i.TenantId == tenantId);
 
             if(tenant != null)
             {
-                CatalogDbContext.Tenants.Remove(tenant);
+                _catalogDbContext.Tenants.Remove(tenant);
             }
         }
 
         public async Task SaveChangesAsync()
         {
-            await CatalogDbContext.SaveChangesAsync();
+            await _catalogDbContext.SaveChangesAsync();
         }
 
         private byte[] ConvertIntKeyToBytesArray(int key)

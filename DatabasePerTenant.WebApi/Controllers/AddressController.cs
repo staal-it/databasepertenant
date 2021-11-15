@@ -10,18 +10,18 @@ namespace DatabasePerTenant.WebApi.Controllers
     [ApiController]
     public class AddressController : ControllerBase
     {
-        private readonly IAddressManager addressManager;
+        private readonly IAddressManager _addressManager;
 
         public AddressController(IAddressManager addressManager)
         {
-            this.addressManager = addressManager;
+            this._addressManager = addressManager;
         }
 
         [HttpGet]
         [Route("")]
         public async Task<ActionResult<AddressDto>> GetAddressAsync()
         {
-            var result = default(AddressDto);
+            var result = await Task.FromResult(default(AddressDto));
 
             return Ok(result);
         }
@@ -30,7 +30,7 @@ namespace DatabasePerTenant.WebApi.Controllers
         [Route("all")]
         public async Task<ActionResult<List<AddressDto>>> GetAddressesAsync()
         {
-            var result = await addressManager.GetAddresses();
+            var result = await _addressManager.GetAddresses();
 
             return Ok(result);
         }
