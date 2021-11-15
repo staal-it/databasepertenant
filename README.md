@@ -14,11 +14,17 @@ ClientId & ClientSecret
 ### App Configuration
 ResourceManagerAppRegistration:ClientId --> pointing to KeyVault, ClientId
 ResourceManagerAppRegistration:ClientSecret --> pointing to KeyVault, ClientSecret
-SubscriptionId
-TenantId
 SqlResourceGroup
+SubscriptionId (use az account show)
+TenantId (use az account show)
+
+### Catalog DB credentials
+The credentials to the catalog db are stored in Key Vault by the Infrastructure pipeline. What needs to be added is a reference to them in App Configuration:
+DatabaseConfig:DatabasePassword --> pointing to KeyVault, CatalogDbPassword
+DatabaseConfig:DatabaseUser --> pointing to KeyVault, CatalogDbUserName
 
 ## Ef and EF Migrations
+The migrations on the tenant databases is automaticly run while connecting to them, the migrations for the catalog database is run in the deployment pipeline. You can also use below command to trigger each manually. When you don't run the pipeline for the catalog db, you need to run the migration manually.
 Install dotnet-ef using 'dotnet tool install --global dotnet-ef'
 
 ### Add Migration
@@ -28,6 +34,8 @@ To add a migration to the Tenant context run: dotnet-ef migrations add Initial -
 
 ### Run Migration
 Run
+From the 'DatabasePerTenant.Data.Catalog' folder:
 dotnet-ef database update --startup-project ../DatabasePerTenant.Data.MigrationApp --context CatalogDbContext --connection "connection string"
 
+From the 'DatabasePerTenant.Data.Tenant' folder:
 dotnet-ef database update --startup-project ../DatabasePerTenant.Data.MigrationApp --context TenantDatabaseContext --connection "connection string"

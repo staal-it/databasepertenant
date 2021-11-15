@@ -99,6 +99,11 @@ namespace DatabasePerTenant.Data.Catalog.Migrations
                 name: "IX_Tenants_ElasticPoolId",
                 table: "Tenants",
                 column: "ElasticPoolId");
+
+            migrationBuilder.InsertData(
+                table: "Customers",
+                columns: new[] { "CustomerName", "LastUpdated" },
+                values: new object[] { "DemoCustomer", "2021-11-15" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
