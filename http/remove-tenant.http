@@ -1,0 +1,1 @@
+DELETE https://localhost:44327/api/tenantmanagement/remove/-1802395219 HTTP/1.1

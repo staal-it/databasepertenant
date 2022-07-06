@@ -1,0 +1,2 @@
+GET https://localhost:44327/api/address/all HTTP/1.1
+tenantId: 1896120121

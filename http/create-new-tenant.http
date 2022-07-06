@@ -1,6 +1,6 @@
-POST https://localhost:5001/tenantmanagement/new HTTP/1.1
+POST https://localhost:44327/api/tenantmanagement/new HTTP/1.1
 content-type: application/json
 
 {
-    "TenantName": "test-database-tenant",
+    "TenantName": "Developer Week3"
 }

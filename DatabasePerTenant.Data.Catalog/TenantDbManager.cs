@@ -73,6 +73,7 @@ namespace DatabasePerTenant.Data.Catalog
             var tenantServer = FindAvailableTenantServer();
 
             var normalizedTenantName = NormalizeTenantName(tenantName);
+
             var tenantDatabase = await _infrastructureClient.CreateNewTenantDatabase(normalizedTenantName);
 
             var tenantId = await RegisterTenantAsync(tenantName, tenantDatabase, tenantServer);
